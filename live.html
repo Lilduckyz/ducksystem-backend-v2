@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>DuckSystem Live Test</title>
+</head>
+
+<body style="background:black;color:white;font-family:Arial;padding:40px;">
+
+<h1>Live Players:</h1>
+
+<h2 id="count">0</h2>
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+<script>
+
+const socket = io("http://localhost:3000");
+
+socket.on("playerCount", (count) => {
+
+    document.getElementById("count").innerText = count;
+
+    console.log("Updated:", count);
+
+});
+
+</script>
+
+</body>
+</html>

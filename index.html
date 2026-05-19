@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DuckyzSMP — Minecraft Server</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #FFD700;
+  --gold-dark: #B8960C;
+  --gold-light: #FFF0A0;
+  --green: #4ADE80;
+  --green-dark: #166534;
+  --bg: #0a0c0f;
+  --bg2: #111318;
+  --bg3: #1a1e26;
+  --bg4: #222633;
+  --border: rgba(255,215,0,0.15);
+  --border2: rgba(255,215,0,0.3);
+  --text: #e8e8e8;
+  --text2: #a0a8b8;
+  --red: #f87171;
+  --blue: #60a5fa;
+  --purple: #a78bfa;
+  --pixel-font: 'Orbitron', monospace;
+  --body-font: 'Rajdhani', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:var(--body-font); font-size:16px; overflow-x:hidden; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:var(--bg); }
+::-webkit-scrollbar-thumb { background:var(--gold-dark); border-radius:3px; }
+
+/* PAGES */
+.page { display:none; min-height:100vh; }
+.page.active { display:block; }
+
+/* NAV */
+nav {
+  position:sticky; top:0; z-index:100;
+  background:rgba(10,12,15,0.95);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(10px);
+  padding:0 2rem;
+  display:flex; align-items:center; gap:1rem;
+  height:64px;
+}
+.nav-logo { display:flex; align-items:center; gap:10px; text-decoration:none; margin-right:auto; }
+.nav-logo img { width:40px; height:40px; image-rendering:pixelated; border-radius:6px; }
+.nav-logo span { font-family:var(--pixel-font); font-size:1.1rem; color:var(--gold); font-weight:700; }
+.nav-btn {
+  background:none; border:none; color:var(--text2); font-family:var(--body-font);
+  font-size:0.95rem; font-weight:600; cursor:pointer; padding:6px 14px;
+  border-radius:6px; transition:all 0.2s; letter-spacing:0.5px;
+}
+.nav-btn:hover, .nav-btn.active { color:var(--gold); background:rgba(255,215,0,0.08); }
+.nav-credits {
+  background:linear-gradient(135deg,var(--gold-dark),var(--gold));
+  color:#000; font-weight:700; font-family:var(--pixel-font);
+  padding:6px 14px; border-radius:6px; font-size:0.8rem;
+  cursor:pointer; border:none; transition:opacity 0.2s;
+}
+.nav-credits:hover { opacity:0.85; }
+.discord-nav {
+  background:#5865F2; color:#fff; border:none; padding:6px 14px;
+  border-radius:6px; font-family:var(--body-font); font-weight:700;
+  font-size:0.9rem; cursor:pointer; transition:opacity 0.2s;
+}
+.discord-nav:hover { opacity:0.85; }
+
+/* HERO */
+.hero {
+  min-height:calc(100vh - 64px);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; padding:4rem 2rem;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,215,0,0.06) 0%, transparent 60%),
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23FFD700' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
+    var(--bg);
+}
+.hero-logo { width:100px; height:100px; image-rendering:pixelated; border-radius:12px; margin-bottom:1.5rem; box-shadow:0 0 40px rgba(255,215,0,0.3); }
+.hero h1 { font-family:var(--pixel-font); font-size:clamp(2rem,6vw,4rem); color:var(--gold); font-weight:900; text-shadow:0 0 40px rgba(255,215,0,0.4); margin-bottom:0.5rem; }
+.hero .tagline { color:var(--text2); font-size:1.2rem; font-weight:500; margin-bottom:2rem; letter-spacing:1px; }
+.ip-box {
+  background:var(--bg3); border:1px solid var(--border2); border-radius:10px;
+  padding:12px 24px; font-family:var(--mono); font-size:1rem;
+  color:var(--green); margin-bottom:2.5rem; cursor:pointer;
+  display:inline-flex; align-items:center; gap:10px; transition:all 0.2s;
+}
+.ip-box:hover { border-color:var(--gold); background:var(--bg4); }
+.ip-box svg { width:16px; height:16px; stroke:var(--text2); }
+.hero-btns { display:flex; gap:1rem; flex-wrap:wrap; justify-content:center; margin-bottom:3rem; }
+.btn-primary {
+  background:linear-gradient(135deg,var(--gold-dark),var(--gold));
+  color:#000; font-weight:800; font-family:var(--pixel-font);
+  padding:12px 28px; border-radius:8px; border:none; cursor:pointer;
+  font-size:0.85rem; letter-spacing:1px; transition:all 0.2s; box-shadow:0 4px 20px rgba(255,215,0,0.3);
+}
+.btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(255,215,0,0.4); }
+.btn-discord {
+  background:#5865F2; color:#fff; font-weight:700; font-family:var(--body-font);
+  padding:12px 28px; border-radius:8px; border:none; cursor:pointer;
+  font-size:1rem; transition:all 0.2s;
+}
+.btn-discord:hover { transform:translateY(-2px); background:#4752c4; }
+.btn-secondary {
+  background:transparent; color:var(--text); border:1px solid var(--border2);
+  font-weight:600; font-family:var(--body-font); padding:10px 24px;
+  border-radius:8px; cursor:pointer; font-size:1rem; transition:all 0.2s;
+}
+.btn-secondary:hover { border-color:var(--gold); color:var(--gold); }
+
+/* STATS */
+.stats { display:flex; gap:2rem; flex-wrap:wrap; justify-content:center; }
+.stat { text-align:center; }
+.stat-num { font-family:var(--pixel-font); font-size:1.8rem; color:var(--gold); font-weight:700; }
+.stat-label { color:var(--text2); font-size:0.85rem; letter-spacing:1px; text-transform:uppercase; }
+
+/* SECTIONS */
+.section { padding:5rem 2rem; max-width:1200px; margin:0 auto; }
+.section-title { font-family:var(--pixel-font); font-size:1.8rem; color:var(--gold); margin-bottom:0.5rem; text-align:center; }
+.section-sub { color:var(--text2); text-align:center; margin-bottom:3rem; font-size:1.05rem; }
+
+/* FEATURE CARDS */
+.feature-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1.5rem; }
+.feature-card {
+  background:var(--bg2); border:1px solid var(--border);
+  border-radius:12px; padding:1.5rem;
+  transition:all 0.3s;
+}
+.feature-card:hover { border-color:var(--gold); transform:translateY(-4px); background:var(--bg3); }
+.feature-icon { font-size:2rem; margin-bottom:1rem; }
+.feature-card h3 { font-family:var(--pixel-font); font-size:1rem; color:var(--gold); margin-bottom:0.5rem; }
+.feature-card p { color:var(--text2); font-size:0.95rem; line-height:1.6; }
+
+/* STORE */
+.store-tabs { display:flex; gap:0.5rem; margin-bottom:2rem; flex-wrap:wrap; }
+.store-tab {
+  background:var(--bg3); border:1px solid var(--border); border-radius:8px;
+  color:var(--text2); font-family:var(--body-font); font-weight:600;
+  padding:8px 20px; cursor:pointer; transition:all 0.2s; font-size:0.95rem;
+}
+.store-tab.active, .store-tab:hover { background:rgba(255,215,0,0.1); border-color:var(--gold); color:var(--gold); }
+.store-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:1.5rem; }
+.store-card {
+  background:var(--bg2); border:1px solid var(--border); border-radius:14px;
+  overflow:hidden; transition:all 0.3s; position:relative;
+}
+.store-card:hover { transform:translateY(-6px); border-color:var(--gold); box-shadow:0 10px 40px rgba(255,215,0,0.1); }
+.store-card-badge {
+  position:absolute; top:12px; right:12px;
+  background:var(--gold); color:#000; font-family:var(--pixel-font);
+  font-size:0.65rem; font-weight:700; padding:3px 8px; border-radius:4px;
+}
+.store-card-img {
+  height:120px; display:flex; align-items:center; justify-content:center;
+  font-size:3.5rem; background:var(--bg3);
+}
+.store-card-body { padding:1rem; }
+.store-card-name { font-family:var(--pixel-font); font-size:0.9rem; color:var(--text); margin-bottom:4px; }
+.store-card-desc { color:var(--text2); font-size:0.85rem; margin-bottom:1rem; line-height:1.5; }
+.store-card-price { display:flex; align-items:center; justify-content:space-between; }
+.price { font-family:var(--pixel-font); font-size:1.1rem; color:var(--gold); }
+.price-credits { font-size:0.8rem; color:var(--text2); }
+.btn-buy {
+  background:linear-gradient(135deg,var(--gold-dark),var(--gold));
+  color:#000; font-weight:700; border:none; border-radius:6px;
+  padding:7px 16px; cursor:pointer; font-family:var(--body-font);
+  font-size:0.9rem; transition:all 0.2s;
+}
+.btn-buy:hover { opacity:0.85; transform:scale(1.03); }
+
+/* CREDIT PACKAGES */
+.credit-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1.5rem; }
+.credit-card {
+  background:var(--bg2); border:1px solid var(--border); border-radius:14px;
+  padding:1.5rem; text-align:center; transition:all 0.3s; cursor:pointer; position:relative;
+}
+.credit-card.popular { border-color:var(--gold); background:rgba(255,215,0,0.05); }
+.credit-card:hover { transform:translateY(-4px); border-color:var(--gold); }
+.credit-badge { background:var(--gold); color:#000; font-family:var(--pixel-font); font-size:0.65rem; font-weight:700; padding:3px 10px; border-radius:20px; display:inline-block; margin-bottom:1rem; }
+.credit-amount { font-family:var(--pixel-font); font-size:2rem; color:var(--gold); font-weight:900; }
+.credit-label { color:var(--text2); font-size:0.85rem; margin-bottom:1rem; }
+.credit-price { font-size:1.4rem; font-weight:700; color:var(--text); margin-bottom:1rem; }
+.credit-bonus { color:var(--green); font-size:0.85rem; font-weight:600; margin-bottom:1.2rem; }
+
+/* BLOG */
+.blog-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1.5rem; }
+.blog-card {
+  background:var(--bg2); border:1px solid var(--border); border-radius:12px;
+  overflow:hidden; transition:all 0.3s; cursor:pointer;
+}
+.blog-card:hover { border-color:var(--gold); transform:translateY(-4px); }
+.blog-header { height:80px; display:flex; align-items:center; padding:1.5rem; font-size:2rem; background:var(--bg3); }
+.blog-body { padding:1.2rem; }
+.blog-tag { background:rgba(255,215,0,0.1); color:var(--gold); font-size:0.75rem; font-weight:700; padding:3px 10px; border-radius:4px; text-transform:uppercase; letter-spacing:1px; }
+.blog-title { font-family:var(--pixel-font); font-size:1rem; color:var(--text); margin:0.75rem 0 0.5rem; }
+.blog-excerpt { color:var(--text2); font-size:0.9rem; line-height:1.6; margin-bottom:1rem; }
+.blog-meta { display:flex; align-items:center; gap:0.5rem; color:var(--text2); font-size:0.8rem; }
+.blog-avatar { width:24px; height:24px; border-radius:50%; background:var(--gold-dark); display:flex; align-items:center; justify-content:center; font-size:0.7rem; color:#000; font-weight:700; }
+
+/* MODAL */
+.modal-bg {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8);
+  z-index:200; align-items:center; justify-content:center; padding:1rem;
+}
+.modal-bg.open { display:flex; }
+.modal {
+  background:var(--bg2); border:1px solid var(--border2); border-radius:16px;
+  padding:2rem; max-width:500px; width:100%; max-height:90vh; overflow-y:auto;
+  position:relative;
+}
+.modal h2 { font-family:var(--pixel-font); color:var(--gold); margin-bottom:1.5rem; font-size:1.2rem; }
+.modal-close {
+  position:absolute; top:1rem; right:1rem; background:none; border:none;
+  color:var(--text2); cursor:pointer; font-size:1.4rem; line-height:1;
+}
+.form-group { margin-bottom:1.2rem; }
+.form-label { display:block; color:var(--text2); font-size:0.85rem; font-weight:600; margin-bottom:6px; letter-spacing:0.5px; text-transform:uppercase; }
+.form-input {
+  width:100%; background:var(--bg3); border:1px solid var(--border2); border-radius:8px;
+  color:var(--text); font-family:var(--body-font); font-size:1rem; padding:10px 14px;
+  outline:none; transition:border-color 0.2s;
+}
+.form-input:focus { border-color:var(--gold); }
+.form-select { appearance:none; cursor:pointer; }
+.credits-display { background:var(--bg3); border:1px solid var(--border); border-radius:8px; padding:12px 16px; display:flex; justify-content:space-between; margin-bottom:1.5rem; }
+.credits-display span:first-child { color:var(--text2); }
+.credits-display span:last-child { font-family:var(--pixel-font); color:var(--gold); font-weight:700; }
+
+/* ADMIN */
+.admin-layout { display:grid; grid-template-columns:220px 1fr; min-height:calc(100vh - 64px); }
+.admin-sidebar { background:var(--bg2); border-right:1px solid var(--border); padding:1.5rem 0; }
+.admin-nav-item {
+  display:flex; align-items:center; gap:10px; padding:10px 1.5rem;
+  cursor:pointer; color:var(--text2); font-weight:600; transition:all 0.2s;
+  font-size:0.95rem;
+}
+.admin-nav-item:hover, .admin-nav-item.active { background:rgba(255,215,0,0.08); color:var(--gold); border-right:2px solid var(--gold); }
+.admin-nav-item svg { width:18px; height:18px; stroke:currentColor; flex-shrink:0; }
+.admin-main { padding:2rem; background:var(--bg); }
+.admin-section { display:none; }
+.admin-section.active { display:block; }
+.admin-title { font-family:var(--pixel-font); font-size:1.4rem; color:var(--gold); margin-bottom:2rem; }
+.stat-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:1rem; margin-bottom:2rem; }
+.stat-card { background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:1.2rem; }
+.stat-card-label { color:var(--text2); font-size:0.8rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:0.5rem; }
+.stat-card-value { font-family:var(--pixel-font); font-size:1.6rem; color:var(--gold); }
+.stat-card-sub { color:var(--green); font-size:0.8rem; margin-top:4px; }
+table { width:100%; border-collapse:collapse; }
+th { background:var(--bg3); color:var(--text2); font-size:0.8rem; text-transform:uppercase; letter-spacing:1px; padding:10px 14px; text-align:left; }
+td { padding:10px 14px; border-bottom:1px solid var(--border); color:var(--text); font-size:0.9rem; }
+tr:hover td { background:rgba(255,215,0,0.03); }
+.table-wrap { background:var(--bg2); border:1px solid var(--border); border-radius:10px; overflow:hidden; overflow-x:auto; }
+.badge { display:inline-block; font-size:0.75rem; font-weight:700; padding:3px 10px; border-radius:20px; }
+.badge-green { background:rgba(74,222,128,0.15); color:var(--green); }
+.badge-gold { background:rgba(255,215,0,0.15); color:var(--gold); }
+.badge-red { background:rgba(248,113,113,0.15); color:var(--red); }
+.badge-blue { background:rgba(96,165,250,0.15); color:var(--blue); }
+.badge-purple { background:rgba(167,139,250,0.15); color:var(--purple); }
+.admin-btn {
+  background:rgba(255,215,0,0.1); color:var(--gold); border:1px solid var(--border2);
+  border-radius:6px; padding:6px 14px; cursor:pointer; font-family:var(--body-font);
+  font-weight:600; font-size:0.85rem; transition:all 0.2s;
+}
+.admin-btn:hover { background:rgba(255,215,0,0.2); }
+.admin-btn-danger {
+  background:rgba(248,113,113,0.1); color:var(--red); border:1px solid rgba(248,113,113,0.3);
+  border-radius:6px; padding:6px 14px; cursor:pointer; font-family:var(--body-font);
+  font-weight:600; font-size:0.85rem; transition:all 0.2s;
+}
+.admin-btn-danger:hover { background:rgba(248,113,113,0.2); }
+.admin-toolbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem; }
+.blog-admin-card { background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:1.2rem; margin-bottom:1rem; display:flex; align-items:flex-start; gap:1rem; justify-content:space-between; }
+.blog-admin-info h3 { font-family:var(--pixel-font); font-size:0.9rem; color:var(--text); margin-bottom:4px; }
+.blog-admin-info p { color:var(--text2); font-size:0.85rem; }
+.blog-admin-actions { display:flex; gap:0.5rem; flex-shrink:0; }
+textarea.form-input { resize:vertical; min-height:100px; }
+.toast {
+  position:fixed; bottom:2rem; right:2rem; background:var(--bg3);
+  border:1px solid var(--gold); border-radius:10px; padding:1rem 1.5rem;
+  color:var(--text); z-index:300; transform:translateY(100px); opacity:0;
+  transition:all 0.3s; display:flex; align-items:center; gap:10px;
+}
+.toast.show { transform:translateY(0); opacity:1; }
+.toast span { color:var(--green); font-size:1.2rem; }
+.login-page { min-height:100vh; display:flex; align-items:center; justify-content:center; background:var(--bg); }
+.login-box { background:var(--bg2); border:1px solid var(--border2); border-radius:16px; padding:2.5rem; width:100%; max-width:380px; text-align:center; }
+.login-box h2 { font-family:var(--pixel-font); color:var(--gold); margin-bottom:0.5rem; }
+.login-box p { color:var(--text2); margin-bottom:2rem; }
+.rank-pill { display:inline-flex; align-items:center; gap:4px; font-size:0.8rem; font-weight:700; padding:3px 10px; border-radius:20px; }
+.rank-vip { background:rgba(255,215,0,0.15); color:var(--gold); }
+.rank-mvp { background:rgba(167,139,250,0.15); color:var(--purple); }
+.rank-elite { background:rgba(248,113,113,0.15); color:var(--red); }
+.rank-legend { background:rgba(96,165,250,0.15); color:var(--blue); }
+.back-link { color:var(--text2); font-size:0.85rem; cursor:pointer; text-decoration:underline; margin-bottom:1rem; display:inline-block; }
+.blog-single { max-width:800px; margin:0 auto; padding:3rem 2rem; }
+.blog-single h1 { font-family:var(--pixel-font); font-size:1.6rem; color:var(--gold); margin-bottom:1rem; }
+.blog-single .meta { color:var(--text2); font-size:0.85rem; margin-bottom:2rem; display:flex; gap:1rem; flex-wrap:wrap; }
+.blog-single .content { color:var(--text); line-height:1.8; font-size:1rem; }
+.blog-single .content p { margin-bottom:1rem; }
+.input-search { background:var(--bg3); border:1px solid var(--border2); border-radius:8px; color:var(--text); font-family:var(--body-font); font-size:0.95rem; padding:8px 14px; outline:none; width:240px; }
+.input-search:focus { border-color:var(--gold); }
+
+@media(max-width:768px) {
+  nav { padding:0 1rem; gap:0.5rem; }
+  .nav-btn { padding:6px 8px; font-size:0.8rem; }
+  .admin-layout { grid-template-columns:1fr; }
+  .admin-sidebar { display:flex; overflow-x:auto; border-right:none; border-bottom:1px solid var(--border); padding:0; }
+  .admin-nav-item { white-space:nowrap; border-right:none !important; border-bottom:2px solid transparent; }
+  .admin-nav-item.active { border-bottom-color:var(--gold) !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a class="nav-logo" href="#" onclick="showPage('home')">
+    <img src="/mnt/user-data/uploads/1779132188926_image.png" alt="DuckyzSMP Logo" onerror="this.style.display='none';this.nextElementSibling.textContent='🦆'">
+    <span>DuckyzSMP</span>
+  </a>
+  <button class="nav-btn active" onclick="showPage('home');setActive(this)">Home</button>
+  <button class="nav-btn" onclick="showPage('store');setActive(this)">Store</button>
+  <button class="nav-btn" onclick="showPage('blog');setActive(this)">Dev Blog</button>
+  <button class="discord-nav" onclick="window.open('https://discord.gg/duckyzsmpp','_blank')">Discord</button>
+  <button class="nav-credits" id="creditsDisplay" onclick="showPage('store');setActive(document.querySelectorAll('.nav-btn')[1])">💰 500 Credits</button>
+</nav>
+
+<!-- HOME PAGE -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <img class="hero-logo" src="/mnt/user-data/uploads/1779132188926_image.png" alt="DuckyzSMP" onerror="this.style.fontSize='5rem';this.style.height='auto';this.innerHTML='🦆'">
+    <h1>DuckyzSMP</h1>
+    <p class="tagline">The Ultimate Minecraft Experience</p>
+    <div class="ip-box" onclick="copyIP()">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+      duckyzsmpp.minehut.gg
+    </div>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="showPage('store');setActive(document.querySelectorAll('.nav-btn')[1])">🛒 Visit Store</button>
+      <button class="btn-discord" onclick="window.open('https://discord.gg/duckyzsmpp','_blank')">🎮 Join Discord</button>
+      <button class="btn-secondary" onclick="showPage('blog');setActive(document.querySelectorAll('.nav-btn')[2])">📰 Dev Blog</button>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="stat-num" id="onlinePlayers">42</div><div class="stat-label">Online Now</div></div>
+      <div class="stat"><div class="stat-num">1,247</div><div class="stat-label">Total Players</div></div>
+      <div class="stat"><div class="stat-num">99.9%</div><div class="stat-label">Uptime</div></div>
+      <div class="stat"><div class="stat-num">4</div><div class="stat-label">Game Modes</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">Why DuckyzSMP?</h2>
+    <p class="section-sub">Everything you need for the perfect Minecraft experience</p>
+    <div class="feature-grid">
+      <div class="feature-card"><div class="feature-icon">⚔️</div><h3>Epic PvP</h3><p>Ranked arenas, tournaments, and intense battles with players from around the world.</p></div>
+      <div class="feature-card"><div class="feature-icon">🏰</div><h3>Survival SMP</h3><p>Classic survival with land claiming, player shops, and a thriving economy.</p></div>
+      <div class="feature-card"><div class="feature-icon">🎁</div><h3>Crate Keys</h3><p>Spin crates for rare cosmetics, OP gear, and exclusive rank upgrades.</p></div>
+      <div class="feature-card"><div class="feature-icon">💎</div><h3>Exclusive Ranks</h3><p>Unlock VIP, MVP, Elite, and Legend ranks with incredible perks and commands.</p></div>
+      <div class="feature-card"><div class="feature-icon">🎨</div><h3>Cosmetics</h3><p>Custom particles, trails, hats, capes, and emotes to make your character unique.</p></div>
+      <div class="feature-card"><div class="feature-icon">🔒</div><h3>Anti-Cheat</h3><p>Advanced anti-cheat system ensuring a fair and fun experience for everyone.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- STORE PAGE -->
+<div id="page-store" class="page">
+  <div class="section">
+    <h2 class="section-title">Server Store</h2>
+    <p class="section-sub">Buy credits to unlock ranks, cosmetics, and crate keys</p>
+
+    <!-- CREDIT PACKAGES -->
+    <h3 style="font-family:var(--pixel-font);color:var(--text);margin-bottom:1rem;font-size:1.1rem;">💰 Credit Packages</h3>
+    <div class="credit-grid" style="margin-bottom:3rem;">
+      <div class="credit-card" onclick="buyCredits(100,'€0.99')">
+        <div class="credit-amount">100</div>
+        <div class="credit-label">Credits</div>
+        <div class="credit-price">€0.99</div>
+        <button class="btn-buy" style="width:100%">Buy Now</button>
+      </div>
+      <div class="credit-card popular" onclick="buyCredits(500,'€3.99')">
+        <div class="credit-badge">⭐ POPULAR</div>
+        <div class="credit-amount">500</div>
+        <div class="credit-label">Credits</div>
+        <div class="credit-price">€3.99</div>
+        <div class="credit-bonus">+50 Bonus Credits!</div>
+        <button class="btn-buy" style="width:100%">Buy Now</button>
+      </div>
+      <div class="credit-card" onclick="buyCredits(1000,'€7.49')">
+        <div class="credit-amount">1000</div>
+        <div class="credit-label">Credits</div>
+        <div class="credit-price">€7.49</div>
+        <div class="credit-bonus">+150 Bonus Credits!</div>
+        <button class="btn-buy" style="width:100%">Buy Now</button>
+      </div>
+      <div class="credit-card" onclick="buyCredits(2500,'€15.99')">
+        <div class="credit-badge">💎 BEST VALUE</div>
+        <div class="credit-amount">2500</div>
+        <div class="credit-label">Credits</div>
+        <div class="credit-price">€15.99</div>
+        <div class="credit-bonus">+500 Bonus Credits!</div>
+        <button class="btn-buy" style="width:100%">Buy Now</button>
+      </div>
+    </div>
+
+    <!-- STORE TABS -->
+    <div class="store-tabs">
+      <button class="store-tab active" onclick="switchTab(this,'ranks')">⭐ Ranks</button>
+      <button class="store-tab" onclick="switchTab(this,'cosmetics')">🎨 Cosmetics</button>
+      <button class="store-tab" onclick="switchTab(this,'crates')">📦 Crate Keys</button>
+    </div>
+
+    <!-- RANKS TAB -->
+    <div id="tab-ranks" class="store-grid">
+      <div class="store-card">
+        <div class="store-card-img" style="background:linear-gradient(135deg,#1a1a00,#2a2a00);">⭐</div>
+        <div class="store-card-body">
+          <div class="store-card-name">VIP Rank</div>
+          <div class="store-card-desc">Custom prefix, /fly in spawn, 5 homes, colored chat, extra claim blocks.</div>
+          <div class="store-card-price"><span class="price">500 <span class="price-credits">credits</span></span><button class="btn-buy" onclick="purchaseItem('VIP Rank',500)">Buy</button></div>
+        </div>
+      </div>
+      <div class="store-card">
+        <div class="store-card-badge">🔥 HOT</div>
+        <div class="store-card-img" style="background:linear-gradient(135deg,#1a0030,#30005a);">💜</div>
+        <div class="store-card-body">
+          <div class="store-card-name">MVP Rank</div>
+          <div class="store-card-desc">All VIP perks + /nick, particle trails, 10 homes, MVP discord role, monthly crate key.</div>
+          <div class="store-card-price"><span class="price">1,200 <span class="price-credits">credits</span></span><button class="btn-buy" onclick="purchaseItem('MVP Rank',1200)">Buy</button></div>
+        </div>
+      </div>
+      <div class="store-card">
+        <div class="store-card-img" style="background:linear-gradient(135deg,#2a0000,#500000);">🔴</div>
+        <div class="store-card-body">
+          <div class="store-card-name">Elite Rank</div>
+          <div class="store-card-desc">All MVP perks + /speed, /god (creative only), custom join message, 20 homes.</div>
+          <div class="store-card-price"><span class="price">2,000 <span class="price-credits">credits</span></span><button class="btn-buy" onclick="purchaseItem('Elite Rank',2000)">Buy</button></div>
+        </div>
+      </div>
+      <div class="store-card">
+        <div class="store-card-badge">👑 BEST</div>
+        <div class="store-card-img" style="background:linear-gradient(135deg,#001a40,#003080);">💙</div>
+        <div class="store-card-body">
+          <div class="store-card-name">Legend Rank</div>
+          <div class="store-card-desc">All Elite perks + /staff chat access, unlimited homes, exclusive Legend cosmetics, 2x weekly crates.</div>
+          <div class="store-card-price"><span class="price">3,500 <span class="price-credits">credits</span></span><button class="btn-buy" onclick="purchaseItem('Legend Rank',3500)">Buy</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COSMETICS TAB -->
+    <div id="tab-cosmetics" class="store-grid" style="display:none">
+      <div class="store-card">
+        <div class="store-card-img">✨</div>
+        <div class="store-card-body">
+          <div class="store-card-name">Fairy Trail</div>
+          <div class="store-card-desc">Magical glowing particles follow your every step.</div>
+          <div class="store-card-price"><span class="price">150 <span class="price-credits">credits</span></span><button class="btn-buy" onclick="purchaseItem('Fairy Trail',150)">Buy</button></div>
+        </div>
+      </div>
+      <div class="store-card">
+        <div class="store-card-img">🎩</div>
+        <div class="store-card-body">
+          <div class="store-card-name">Wizard Hat</div>
+          <div class="store-card-desc">An animated hat cosmetic that floats above your head.</div>
+          <div class="store-card-price"><span class="price">200 <span class="price-credits">credits</span></span><button class="btn-buy" onclick="purchaseItem('Wizard Hat',200)">Buy</button></div>
+        </div>
+      </div>
+      <div class="store-card">
+        <div class="store-card-img">🌊</div>
+        <div class="store-card-body">
+          <div class="store-card-name">Ocean Cape</div>
+          <div class="store-card-desc">Animated ocean wave pattern cape — ultra rare.</div>
+          <div class="store-card-price"><span class="price">400 <span class="price-credits">credits</span></span><button class="btn-buy" onclick="purchaseItem('Ocean Cape',400)">Buy</button></div>
+        </div>
+      </div>
+      <div class="store-card">
+        <div class="store-card-badge">NEW</div>
+        <div class="store-card-img">🔥</div>
+        <div class="store-card-body">
+          <div class="store-card-name">Inferno Aura</div>
+          <div class="store-card-desc">Wrap yourself in flames. Pure fire particle aura effect.</div>
+          <div class="store-card-price"><span class="price">350 <span class="price-credits">credits</span></span><button class="btn-buy" onclick="purchaseItem('Inferno Aura',350)">Buy</button></div>
+        </div>
+      </div>
+      <div class="store-card">
+        <div class="store-card-img">🎭</div>
+        <div class="store-card-body">
+          <div class="store-card-name">Emote Bundle x5</div>
+          <div class="store-card-desc">5 random exclusive emotes for the chat emote system.</div>
+          <div class="store-card-price"><span class="price">250 <span class="price-credits">credits</span></span><button class="btn-buy" onclick="purchaseItem('Emote Bundle x5',250)">Buy</button></div>
+        </div>
+      </div>
+      <div class="store-card">
+        <div class="store-card-img">🌙</div>
+        <div class="store-card-body">
+          <div class="store-card-name">Moon Wings</div>
+          <div class="store-card-desc">Rare animated moonstone wing cosmetic for your back.</div>
+          <div class="store-card-price"><span class="price">500 <span class="price-credits">credits</span></span><button class="btn-buy" onclick="purchaseItem('Moon Wings',500)">Buy</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CRATES TAB -->
+    <div id="tab-crates" class="store-grid" style="display:none">
+      <div class="store-card">
+        <div class="store-card-img">📦</div>
+        <div class="store-card-body">
+          <div class="store-card-name">Common Key x1</div>
+          <div class="store-card-desc">Contains common to rare cosmetics and small credit rewards.</div>
+          <div class="store-card-price"><span class="price">75 <span class="price-credits">credits</span></span><button class="btn-buy" onclick="purchaseItem('Common Key x1',75)">Buy</button></div>
+        </div>
+      </div>
+      <div class="store-card">
+        <div class="store-card-img">💎</div>
+        <div class="store-card-body">
+          <div class="store-card-name">Rare Key x1</div>
+          <div class="store-card-desc">Better odds for rare items, rank upgrades, and bonus credits.</div>
+          <div class="store-card-price"><span class="price">175 <span class="price-credits">credits</span></span><button class="btn-buy" onclick="purchaseItem('Rare Key x1',175)">Buy</button></div>
+        </div>
+      </div>
+      <div class="store-card">
+        <div class="store-card-badge">🔥 VALUE</div>
+        <div class="store-card-img">🗝️</div>
+        <div class="store-card-body">
+          <div class="store-card-name">Rare Key x5</div>
+          <div class="store-card-desc">5 Rare keys at a discounted bundle price. Save 125 credits!</div>
+          <div class="store-card-price"><span class="price">750 <span class="price-credits">credits</span></span><button class="btn-buy" onclick="purchaseItem('Rare Key x5',750)">Buy</button></div>
+        </div>
+      </div>
+      <div class="store-card">
+        <div class="store-card-img">👑</div>
+        <div class="store-card-body">
+          <div class="store-card-name">Legendary Key x1</div>
+          <div class="store-card-desc">Contains exclusive legendary cosmetics, full ranks, and massive credit jackpots.</div>
+          <div class="store-card-price"><span class="price">500 <span class="price-credits">credits</span></span><button class="btn-buy" onclick="purchaseItem('Legendary Key x1',500)">Buy</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BLOG PAGE -->
+<div id="page-blog" class="page">
+  <div id="blog-list-view">
+    <div class="section">
+      <h2 class="section-title">Dev Blog</h2>
+      <p class="section-sub">Updates, patch notes, and behind-the-scenes from the team</p>
+      <div class="blog-grid" id="blogGrid"></div>
+    </div>
+  </div>
+  <div id="blog-single-view" style="display:none">
+    <div class="blog-single">
+      <span class="back-link" onclick="showBlogList()">← Back to Blog</span>
+      <div id="blogSingleContent"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN PAGE -->
+<div id="page-admin" class="page">
+  <div id="adminLogin" class="login-page">
+    <div class="login-box">
+      <div style="font-size:3rem;margin-bottom:1rem;">🛡️</div>
+      <h2>Admin Panel</h2>
+      <p>Staff access only</p>
+      <div class="form-group"><input class="form-input" type="text" id="adminUser" placeholder="Username"></div>
+      <div class="form-group"><input class="form-input" type="password" id="adminPass" placeholder="Password" onkeydown="if(event.key==='Enter')adminLogin()"></div>
+      <button class="btn-primary" style="width:100%" onclick="adminLogin()">LOGIN</button>
+      <p style="color:var(--text2);font-size:0.8rem;margin-top:1rem;">Hint: admin / admin123</p>
+    </div>
+  </div>
+  <div id="adminPanel" style="display:none">
+    <div class="admin-layout">
+      <div class="admin-sidebar">
+        <div style="padding:1rem 1.5rem;border-bottom:1px solid var(--border);margin-bottom:0.5rem;">
+          <div style="font-family:var(--pixel-font);color:var(--gold);font-size:0.85rem;">ADMIN PANEL</div>
+          <div style="color:var(--text2);font-size:0.8rem;">DuckyzSMP Staff</div>
+        </div>
+        <div class="admin-nav-item active" onclick="switchAdmin(this,'dashboard')">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard
+        </div>
+        <div class="admin-nav-item" onclick="switchAdmin(this,'players')">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Players
+        </div>
+        <div class="admin-nav-item" onclick="switchAdmin(this,'purchases')">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>Purchases
+        </div>
+        <div class="admin-nav-item" onclick="switchAdmin(this,'credits')">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Credits
+        </div>
+        <div class="admin-nav-item" onclick="switchAdmin(this,'blog')">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>Blog Posts
+        </div>
+        <div class="admin-nav-item" onclick="switchAdmin(this,'store_mgmt')">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Store Mgmt
+        </div>
+        <div class="admin-nav-item" onclick="switchAdmin(this,'bans')">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>Bans
+        </div>
+        <div style="margin-top:auto;padding:1rem 1.5rem;border-top:1px solid var(--border);margin-top:2rem;">
+          <button class="admin-btn-danger" style="width:100%" onclick="adminLogout()">Logout</button>
+        </div>
+      </div>
+      <div class="admin-main">
+
+        <!-- DASHBOARD -->
+        <div id="admin-dashboard" class="admin-section active">
+          <div class="admin-title">📊 Dashboard</div>
+          <div class="stat-cards">
+            <div class="stat-card"><div class="stat-card-label">Online Players</div><div class="stat-card-value">42</div><div class="stat-card-sub">↑ 12% today</div></div>
+            <div class="stat-card"><div class="stat-card-label">Total Revenue</div><div class="stat-card-value">€1,847</div><div class="stat-card-sub">↑ 8% this week</div></div>
+            <div class="stat-card"><div class="stat-card-label">Credits Sold</div><div class="stat-card-value">24,500</div><div class="stat-card-sub">This month</div></div>
+            <div class="stat-card"><div class="stat-card-label">Total Players</div><div class="stat-card-value">1,247</div><div class="stat-card-sub">+34 new today</div></div>
+            <div class="stat-card"><div class="stat-card-label">Active Ranks</div><div class="stat-card-value">318</div><div class="stat-card-sub">Across all tiers</div></div>
+          </div>
+          <h3 style="color:var(--text);margin-bottom:1rem;font-family:var(--pixel-font);font-size:0.9rem;">Recent Activity</h3>
+          <div class="table-wrap">
+            <table><thead><tr><th>Time</th><th>Player</th><th>Action</th><th>Details</th></tr></thead>
+            <tbody>
+              <tr><td style="color:var(--text2)">2 min ago</td><td>CreeperKing</td><td><span class="badge badge-green">Purchase</span></td><td>Bought MVP Rank — 1,200 credits</td></tr>
+              <tr><td style="color:var(--text2)">15 min ago</td><td>SteveXPro</td><td><span class="badge badge-gold">Credits</span></td><td>Purchased 500 credits package</td></tr>
+              <tr><td style="color:var(--text2)">1 hr ago</td><td>DiamondQueen</td><td><span class="badge badge-blue">Login</span></td><td>Player joined the server</td></tr>
+              <tr><td style="color:var(--text2)">2 hr ago</td><td>NoobSlayer99</td><td><span class="badge badge-red">Report</span></td><td>Reported for suspected hacking</td></tr>
+              <tr><td style="color:var(--text2)">3 hr ago</td><td>LegendDuck</td><td><span class="badge badge-purple">Crate</span></td><td>Opened Legendary Key — Won Moon Wings</td></tr>
+            </tbody></table>
+          </div>
+        </div>
+
+        <!-- PLAYERS -->
+        <div id="admin-players" class="admin-section">
+          <div class="admin-title">👥 Player Management</div>
+          <div class="admin-toolbar">
+            <input class="input-search" type="text" placeholder="🔍 Search players..." oninput="filterPlayers(this.value)">
+            <div style="display:flex;gap:0.5rem">
+              <button class="admin-btn" onclick="showModal('addCreditsModal')">+ Add Credits</button>
+              <button class="btn-primary" onclick="openAddPlayerModal()" style="font-size:0.8rem;padding:8px 18px;">+ Add Player</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table id="playersTable"><thead><tr><th>Username</th><th>Rank</th><th>Credits</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="playersTbody"></tbody></table>
+          </div>
+        </div>
+
+        <!-- PURCHASES -->
+        <div id="admin-purchases" class="admin-section">
+          <div class="admin-title">🛒 Purchase History</div>
+          <div class="admin-toolbar">
+            <input class="input-search" type="text" placeholder="🔍 Search orders..." oninput="filterPurchases(this.value)">
+            <select class="form-input" style="width:auto;padding:8px 14px;" id="purchaseTypeFilter" onchange="filterPurchases('')">
+              <option value="all">All Types</option><option value="Rank">Ranks</option><option value="Credits">Credits</option><option value="Cosmetic">Cosmetics</option><option value="Key">Crate Keys</option>
+            </select>
+          </div>
+          <div class="table-wrap">
+            <table><thead><tr><th>Order ID</th><th>Player</th><th>Item</th><th>Price</th><th>Credits</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody id="purchasesTbody"></tbody></table>
+          </div>
+        </div>
+
+        <!-- CREDITS -->
+        <div id="admin-credits" class="admin-section">
+          <div class="admin-title">💰 Credit Management</div>
+          <div class="stat-cards" style="margin-bottom:2rem;">
+            <div class="stat-card"><div class="stat-card-label">Credits in Circulation</div><div class="stat-card-value" id="credCirculation">—</div></div>
+            <div class="stat-card"><div class="stat-card-label">Credits Spent</div><div class="stat-card-value">52,300</div></div>
+            <div class="stat-card"><div class="stat-card-label">Avg Per Player</div><div class="stat-card-value" id="credAvg">—</div></div>
+          </div>
+          <div class="table-wrap">
+            <table><thead><tr><th>Player</th><th>Credits</th><th>Action</th></tr></thead>
+            <tbody id="creditsAdminTbody"></tbody></table>
+          </div>
+        </div>
+
+        <!-- BLOG -->
+        <div id="admin-blog" class="admin-section">
+          <div class="admin-title">📝 Blog Posts</div>
+          <div class="admin-toolbar">
+            <span style="color:var(--text2);font-size:0.9rem;" id="blogCount"></span>
+            <button class="btn-primary" onclick="showModal('newBlogModal')" style="font-size:0.8rem;padding:8px 18px;">+ New Post</button>
+          </div>
+          <div id="adminBlogList"></div>
+        </div>
+
+        <!-- STORE MGMT -->
+        <div id="admin-store_mgmt" class="admin-section">
+          <div class="admin-title">🏪 Store Management</div>
+          <div class="admin-toolbar">
+            <select class="form-input" style="width:auto;padding:8px 14px;" id="storeCatFilter" onchange="renderStoreAdmin()">
+              <option value="all">All Categories</option><option value="Rank">Ranks</option><option value="Cosmetic">Cosmetics</option><option value="Crate Key">Crate Keys</option>
+            </select>
+            <button class="btn-primary" onclick="openNewItemModal()" style="font-size:0.8rem;padding:8px 18px;">+ Add Item</button>
+          </div>
+          <div class="table-wrap">
+            <table><thead><tr><th>Item</th><th>Category</th><th>Price (credits)</th><th>Sold</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="storeAdminTbody"></tbody></table>
+          </div>
+        </div>
+
+        <!-- BANS -->
+        <div id="admin-bans" class="admin-section">
+          <div class="admin-title">🚫 Ban Management</div>
+          <div class="admin-toolbar">
+            <input class="input-search" type="text" placeholder="🔍 Search banned players..." oninput="filterBans(this.value)">
+            <button class="btn-primary" onclick="openBanModal()" style="font-size:0.8rem;padding:8px 18px;">+ Add Ban</button>
+          </div>
+          <div class="table-wrap">
+            <table><thead><tr><th>Player</th><th>Reason</th><th>Banned By</th><th>Expires</th><th>Actions</th></tr></thead>
+            <tbody id="bansTbody"></tbody></table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<!-- Buy Credits Modal -->
+<div class="modal-bg" id="buyModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('buyModal')">✕</button>
+    <h2>💰 Purchase Credits</h2>
+    <p style="color:var(--text2);margin-bottom:1.5rem;font-size:0.95rem;">Enter your Minecraft username to link the credits to your account.</p>
+    <div class="form-group"><label class="form-label">Package</label><div style="font-family:var(--pixel-font);color:var(--gold);font-size:1.2rem;" id="buyModalPackage">500 Credits — €3.99</div></div>
+    <div class="form-group"><label class="form-label">Minecraft Username</label><input class="form-input" type="text" placeholder="YourUsername" id="buyUsername"></div>
+    <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="you@email.com"></div>
+    <div class="form-group"><label class="form-label">Payment Method</label>
+      <select class="form-input form-select">
+        <option>💳 Credit/Debit Card</option>
+        <option>🅿️ PayPal</option>
+        <option>📱 Stripe</option>
+      </select>
+    </div>
+    <button class="btn-primary" style="width:100%;font-size:0.9rem" onclick="completePurchase()">Complete Purchase</button>
+    <p style="color:var(--text2);font-size:0.75rem;text-align:center;margin-top:1rem;">Secured by SSL. Credits delivered instantly.</p>
+  </div>
+</div>
+
+<!-- Item Purchase Modal -->
+<div class="modal-bg" id="itemModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('itemModal')">✕</button>
+    <h2>🛒 Confirm Purchase</h2>
+    <div class="credits-display">
+      <span>Your Credits</span>
+      <span id="userCredits">500 💰</span>
+    </div>
+    <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:1rem;margin-bottom:1.5rem;">
+      <div style="font-family:var(--pixel-font);color:var(--text);margin-bottom:4px;" id="itemModalName">MVP Rank</div>
+      <div style="color:var(--gold);font-family:var(--pixel-font);font-size:1.4rem;" id="itemModalPrice">1,200 Credits</div>
+    </div>
+    <div class="form-group"><label class="form-label">Minecraft Username</label><input class="form-input" type="text" placeholder="YourUsername"></div>
+    <button class="btn-primary" style="width:100%" onclick="confirmItemBuy()">Confirm Purchase</button>
+    <p style="color:var(--text2);font-size:0.8rem;text-align:center;margin-top:0.8rem;">Not enough credits? <span style="color:var(--gold);cursor:pointer" onclick="closeModal('itemModal');showModal('buyModal')">Buy more →</span></p>
+  </div>
+</div>
+
+<!-- Admin: New Blog Post -->
+<div class="modal-bg" id="newBlogModal">
+  <div class="modal" style="max-width:600px">
+    <button class="modal-close" onclick="closeModal('newBlogModal')">✕</button>
+    <h2 id="newBlogModalTitle">📝 New Blog Post</h2>
+    <div class="form-group"><label class="form-label">Title</label><input class="form-input" type="text" placeholder="Post title..." id="newBlogTitle"></div>
+    <div class="form-group"><label class="form-label">Category</label>
+      <select class="form-input form-select" id="newBlogCategory">
+        <option>Update</option><option>Patch Notes</option><option>Event</option><option>Announcement</option>
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">Excerpt</label><input class="form-input" type="text" placeholder="Short summary..." id="newBlogExcerpt"></div>
+    <div class="form-group"><label class="form-label">Content</label><textarea class="form-input" id="newBlogContent" style="min-height:140px" placeholder="Full post content..."></textarea></div>
+    <div class="form-group"><label class="form-label">Author</label><input class="form-input" type="text" placeholder="DuckyzDev" id="newBlogAuthor" value="DuckyzDev"></div>
+    <div style="display:flex;gap:1rem">
+      <button class="admin-btn" style="flex:1" onclick="closeModal('newBlogModal')">Cancel</button>
+      <button class="btn-primary" style="flex:2;font-size:0.85rem" onclick="publishBlogPost()">Publish Post</button>
+    </div>
+  </div>
+</div>
+
+<!-- Admin: Add Credits -->
+<div class="modal-bg" id="addCreditsModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('addCreditsModal')">✕</button>
+    <h2>💰 Add Credits to Player</h2>
+    <div class="form-group"><label class="form-label">Player Username</label>
+      <select class="form-input form-select" id="credPlayer"></select>
+    </div>
+    <div class="form-group"><label class="form-label">Amount</label><input class="form-input" type="number" placeholder="500" id="credAmount" min="1"></div>
+    <div class="form-group"><label class="form-label">Reason</label><input class="form-input" type="text" placeholder="Giveaway, refund, etc." id="credReason"></div>
+    <button class="btn-primary" style="width:100%" onclick="adminAddCredits()">Add Credits</button>
+  </div>
+</div>
+
+<!-- Admin: Modify Credits -->
+<div class="modal-bg" id="modifyCreditsModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modifyCreditsModal')">✕</button>
+    <h2>✏️ Modify Credits</h2>
+    <div class="form-group"><label class="form-label">Player</label><div style="font-family:var(--pixel-font);color:var(--text);font-size:1rem;padding:8px 0;" id="modPlayerName">—</div></div>
+    <div class="form-group"><label class="form-label">Current Balance</label><div style="font-family:var(--pixel-font);color:var(--gold);font-size:1.2rem" id="modCurrentBalance">—</div></div>
+    <div class="form-group"><label class="form-label">Action</label>
+      <select class="form-input form-select" id="modAction">
+        <option value="add">Add Credits</option><option value="remove">Remove Credits</option><option value="set">Set to Amount</option>
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">Amount</label><input class="form-input" type="number" placeholder="0" id="modAmount" min="0"></div>
+    <input type="hidden" id="modPlayerIndex">
+    <button class="btn-primary" style="width:100%" onclick="applyModifyCredits()">Save Changes</button>
+  </div>
+</div>
+
+<!-- Admin: Ban Player -->
+<div class="modal-bg" id="banModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('banModal')">✕</button>
+    <h2>🚫 Ban Player</h2>
+    <div class="form-group"><label class="form-label">Minecraft Username</label><input class="form-input" type="text" placeholder="PlayerName" id="banUsername"></div>
+    <div class="form-group"><label class="form-label">Reason</label><input class="form-input" type="text" placeholder="Reason for ban" id="banReason"></div>
+    <div class="form-group"><label class="form-label">Duration</label>
+      <select class="form-input form-select" id="banDuration">
+        <option>1 Day</option><option>3 Days</option><option>1 Week</option><option>1 Month</option><option>Permanent</option>
+      </select>
+    </div>
+    <button class="btn-primary" style="width:100%;background:linear-gradient(135deg,#991b1b,#f87171);box-shadow:0 4px 20px rgba(248,113,113,0.3)" onclick="issueBan()">Issue Ban</button>
+  </div>
+</div>
+
+<!-- Admin: New Store Item -->
+<div class="modal-bg" id="newItemModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('newItemModal')">✕</button>
+    <h2 id="newItemModalTitle">➕ Add Store Item</h2>
+    <div class="form-group"><label class="form-label">Item Name</label><input class="form-input" type="text" placeholder="e.g. Dragon Wings" id="newItemName"></div>
+    <div class="form-group"><label class="form-label">Category</label>
+      <select class="form-input form-select" id="newItemCategory"><option>Rank</option><option>Cosmetic</option><option>Crate Key</option></select>
+    </div>
+    <div class="form-group"><label class="form-label">Price (Credits)</label><input class="form-input" type="number" placeholder="500" id="newItemPrice"></div>
+    <div class="form-group"><label class="form-label">Description</label><textarea class="form-input" style="min-height:80px" placeholder="Item description..." id="newItemDesc"></textarea></div>
+    <div class="form-group"><label class="form-label">Emoji Icon</label><input class="form-input" type="text" placeholder="🎭" id="newItemEmoji"></div>
+    <input type="hidden" id="editingItemId" value="">
+    <button class="btn-primary" style="width:100%;font-size:0.85rem" onclick="saveStoreItem()">Save Item</button>
+  </div>
+</div>
+
+<!-- Admin: Add Player -->
+<div class="modal-bg" id="addPlayerModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('addPlayerModal')">✕</button>
+    <h2>➕ Add Player</h2>
+    <div class="form-group"><label class="form-label">Minecraft Username</label><input class="form-input" type="text" placeholder="PlayerName" id="newPlayerName"></div>
+    <div class="form-group"><label class="form-label">Starting Rank</label>
+      <select class="form-input form-select" id="newPlayerRank">
+        <option value="none">None</option>
+        <option value="vip">⭐ VIP</option>
+        <option value="mvp">💜 MVP</option>
+        <option value="elite">🔴 Elite</option>
+        <option value="legend">👑 Legend</option>
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">Starting Credits</label><input class="form-input" type="number" placeholder="0" id="newPlayerCredits" min="0" value="0"></div>
+    <button class="btn-primary" style="width:100%" onclick="addPlayer()">Add Player</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span>✓</span><span id="toastMsg">Done!</span></div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────
+let userCredits = 500;
+
+let blogPosts = [
+  {id:1,title:"Season 3 Launch — What's New",tag:"Announcement",excerpt:"Season 3 is finally here! New map, new warps, new PvP arena and tons of quality-of-life fixes.",content:"<p>Season 3 has officially launched and we're incredibly excited to share everything we've prepared over the past 2 months of development.</p><p>The new map features a completely custom terrain generated exclusively for DuckyzSMP. You'll find 6 new biomes, a massive central spawn hub, and brand new hidden dungeons scattered across the world.</p><p>Our new PvP arena now supports 1v1 ranked matches with ELO scoring. Fight your way up the leaderboard to earn exclusive cosmetics and credit rewards.</p><p>Thank you for being part of this incredible community!</p>",author:"DuckyzDev",date:"May 14, 2025",emoji:"🚀",authorInitials:"DD"},
+  {id:2,title:"Patch 2.4.1 — Bug Fixes & Balance",tag:"Patch Notes",excerpt:"A focused patch addressing economy balance, crate odds adjustments, and several reported exploits.",content:"<p>This patch focuses on stability and balance adjustments based on community feedback from the first week of Season 3.</p><p>Economy: Sell prices for iron and gold have been reduced by 15% to prevent rapid inflation. Diamond tools now have a sell value.</p><p>Crates: Legendary crate odds have been improved. The minimum reward floor has been raised to ensure no bad drops.</p><p>Bug fixes: Fixed an issue where /home would teleport players underground. Fixed chat filter false positives. Fixed rank perks not applying after server restart.</p>",author:"PatchBot",date:"May 10, 2025",emoji:"🔧",authorInitials:"PB"},
+  {id:3,title:"Summer Event — 2x Drop Rates!",tag:"Event",excerpt:"For the entire month of June, all drop rates are doubled. Login daily for bonus crate keys!",content:"<p>To celebrate summer, we're running our biggest event of the year! Every single drop rate in the game is doubled for the entire month of June.</p><p>On top of that, logging in daily will reward you with bonus crate keys — up to 30 keys over the month if you log in every day!</p><p>Special summer-themed cosmetics have been added to the Legendary crate for a limited time only.</p>",author:"DuckyzAdmin",date:"May 8, 2025",emoji:"☀️",authorInitials:"DA"},
+  {id:4,title:"New Cosmetics — Dragon Collection",tag:"Update",excerpt:"The Dragon Collection is now live in the store! 6 new cosmetics including wings, trail, and a crown.",content:"<p>We're thrilled to announce the Dragon Collection, our most ambitious cosmetic release yet!</p><p>The collection includes: Dragon Wings (animated), Dragon Trail (fire breath particles), Dragon Crown (floating crown), Dragon Aura (scales effect around your character), Dragon Cape, and the ultra-rare Dragon Transformation emote.</p><p>All items are available individually or as a bundle for a significant discount.</p>",author:"DuckyzDev",date:"May 3, 2025",emoji:"🐉",authorInitials:"DD"},
+];
+
+let players = [
+  {name:"CreeperKing",rank:"legend",credits:3400,joined:"Jan 2025",online:true},
+  {name:"SteveXPro",rank:"mvp",credits:1250,joined:"Feb 2025",online:true},
+  {name:"DiamondQueen",rank:"vip",credits:800,joined:"Mar 2025",online:false},
+  {name:"NoobSlayer99",rank:"none",credits:150,joined:"Apr 2025",online:true},
+  {name:"LegendDuck",rank:"elite",credits:5000,joined:"Dec 2024",online:false},
+  {name:"BuilderBob",rank:"vip",credits:420,joined:"Mar 2025",online:true},
+];
+
+let purchases = [
+  {id:"#ORD-4821",player:"CreeperKing",item:"MVP Rank",price:"€3.99",credits:1200,date:"May 14",status:"completed"},
+  {id:"#ORD-4820",player:"SteveXPro",item:"500 Credits",price:"€3.99",credits:500,date:"May 14",status:"completed"},
+  {id:"#ORD-4819",player:"DiamondQueen",item:"Fairy Trail",price:"—",credits:150,date:"May 13",status:"completed"},
+  {id:"#ORD-4818",player:"LegendDuck",item:"Legendary Key x1",price:"—",credits:500,date:"May 13",status:"completed"},
+  {id:"#ORD-4817",player:"BuilderBob",item:"VIP Rank",price:"€3.99",credits:500,date:"May 12",status:"completed"},
+  {id:"#ORD-4816",player:"NoobSlayer99",item:"1000 Credits",price:"€7.49",credits:1000,date:"May 11",status:"refunded"},
+];
+
+let bans = [
+  {player:"HackerBoy420",reason:"Hacking / Cheating",bannedBy:"DuckyzAdmin",expires:"Permanent"},
+  {player:"GrieferKing",reason:"Griefing protected land",bannedBy:"Mod_Steve",expires:"2025-07-01"},
+  {player:"ToxicPlayer",reason:"Severe harassment",bannedBy:"DuckyzAdmin",expires:"2025-06-15"},
+];
+
+let storeItems = [
+  {id:1,name:"VIP Rank",category:"Rank",price:500,sold:142,active:true,emoji:"⭐"},
+  {id:2,name:"MVP Rank",category:"Rank",price:1200,sold:87,active:true,emoji:"💜"},
+  {id:3,name:"Elite Rank",category:"Rank",price:2000,sold:43,active:true,emoji:"🔴"},
+  {id:4,name:"Legend Rank",category:"Rank",price:3500,sold:21,active:true,emoji:"👑"},
+  {id:5,name:"Fairy Trail",category:"Cosmetic",price:150,sold:201,active:true,emoji:"✨"},
+  {id:6,name:"Wizard Hat",category:"Cosmetic",price:200,sold:134,active:true,emoji:"🎩"},
+  {id:7,name:"Ocean Cape",category:"Cosmetic",price:400,sold:55,active:true,emoji:"🌊"},
+  {id:8,name:"Common Key x1",category:"Crate Key",price:75,sold:892,active:true,emoji:"📦"},
+  {id:9,name:"Rare Key x1",category:"Crate Key",price:175,sold:389,active:true,emoji:"💎"},
+  {id:10,name:"Legendary Key x1",category:"Crate Key",price:500,sold:67,active:true,emoji:"👑"},
+];
+
+// ── ROUTING ───────────────────────────────────────────────────────────────
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  window.scrollTo(0,0);
+  if(id==='blog') renderBlog();
+  if(id==='admin') { renderPlayers(); renderAdminBlog(); renderPurchases(); renderBans(); renderStoreAdmin(); renderCreditsAdmin(); }
+}
+
+function setActive(el) {
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+document.querySelector('.nav-logo').addEventListener('dblclick',()=>{ showPage('admin'); });
+
+// ── COPY IP ────────────────────────────────────────────────────────────────
+function copyIP() {
+  navigator.clipboard.writeText('duckyzsmpp.minehut.gg').catch(()=>{});
+  showToast('IP copied to clipboard!');
+}
+
+// ── STORE TABS ─────────────────────────────────────────────────────────────
+function switchTab(el,tab) {
+  document.querySelectorAll('.store-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  ['ranks','cosmetics','crates'].forEach(t=>{
+    document.getElementById('tab-'+t).style.display = t===tab?'grid':'none';
+  });
+}
+
+// ── CREDITS (player-facing) ────────────────────────────────────────────────
+let pendingCredits=0;
+function buyCredits(amount,price) {
+  pendingCredits=amount;
+  document.getElementById('buyModalPackage').textContent=amount+' Credits — '+price;
+  showModal('buyModal');
+}
+
+function completePurchase() {
+  const u=document.getElementById('buyUsername').value.trim();
+  if(!u){showToast('Please enter your username!');return;}
+  userCredits+=pendingCredits;
+  updateCreditsDisplay();
+  closeModal('buyModal');
+  showToast('Credits added! You now have '+userCredits+' credits.');
+}
+
+function updateCreditsDisplay() {
+  document.getElementById('creditsDisplay').textContent='💰 '+userCredits+' Credits';
+}
+
+let pendingItem='',pendingItemCost=0;
+function purchaseItem(name,cost) {
+  pendingItem=name; pendingItemCost=cost;
+  document.getElementById('itemModalName').textContent=name;
+  document.getElementById('itemModalPrice').textContent=cost.toLocaleString()+' Credits';
+  document.getElementById('userCredits').textContent=userCredits+' 💰';
+  showModal('itemModal');
+}
+
+function confirmItemBuy() {
+  if(userCredits<pendingItemCost){showToast('Not enough credits!');return;}
+  userCredits-=pendingItemCost;
+  updateCreditsDisplay();
+  closeModal('itemModal');
+  showToast(pendingItem+' purchased! Check your in-game inventory.');
+}
+
+// ── BLOG (public) ──────────────────────────────────────────────────────────
+function renderBlog() {
+  const grid=document.getElementById('blogGrid');
+  grid.innerHTML=blogPosts.map(p=>`
+    <div class="blog-card" onclick="showBlogPost(${p.id})">
+      <div class="blog-header">${p.emoji}</div>
+      <div class="blog-body">
+        <span class="blog-tag">${p.tag}</span>
+        <div class="blog-title">${p.title}</div>
+        <div class="blog-excerpt">${p.excerpt}</div>
+        <div class="blog-meta">
+          <div class="blog-avatar">${p.authorInitials}</div>
+          <span>${p.author}</span><span>·</span><span>${p.date}</span>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function showBlogPost(id) {
+  const p=blogPosts.find(b=>b.id===id); if(!p)return;
+  document.getElementById('blog-list-view').style.display='none';
+  document.getElementById('blog-single-view').style.display='block';
+  document.getElementById('blogSingleContent').innerHTML=`
+    <div style="font-size:3rem;margin-bottom:1rem">${p.emoji}</div>
+    <span class="blog-tag">${p.tag}</span>
+    <h1>${p.title}</h1>
+    <div class="meta"><span>👤 ${p.author}</span><span>📅 ${p.date}</span></div>
+    <div class="content">${p.content}</div>`;
+  window.scrollTo(0,0);
+}
+
+function showBlogList() {
+  document.getElementById('blog-list-view').style.display='block';
+  document.getElementById('blog-single-view').style.display='none';
+}
+
+// ── ADMIN LOGIN ────────────────────────────────────────────────────────────
+function adminLogin() {
+  const u=document.getElementById('adminUser').value;
+  const p=document.getElementById('adminPass').value;
+  if(u==='admin'&&p==='admin123') {
+    document.getElementById('adminLogin').style.display='none';
+    document.getElementById('adminPanel').style.display='block';
+    renderPlayers(); renderAdminBlog(); renderPurchases(); renderBans(); renderStoreAdmin(); renderCreditsAdmin();
+  } else { showToast('Invalid credentials!'); }
+}
+
+function adminLogout() {
+  document.getElementById('adminLogin').style.display='flex';
+  document.getElementById('adminPanel').style.display='none';
+  document.getElementById('adminUser').value='';
+  document.getElementById('adminPass').value='';
+}
+
+function switchAdmin(el,section) {
+  document.querySelectorAll('.admin-nav-item').forEach(i=>i.classList.remove('active'));
+  document.querySelectorAll('.admin-section').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('admin-'+section).classList.add('active');
+}
+
+// ── ADMIN: PLAYERS ─────────────────────────────────────────────────────────
+function rankBadgeHTML(rank) {
+  return rank==='legend'?`<span class="rank-pill rank-legend">👑 Legend</span>`:
+    rank==='elite'?`<span class="rank-pill rank-elite">🔴 Elite</span>`:
+    rank==='mvp'?`<span class="rank-pill rank-mvp">💜 MVP</span>`:
+    rank==='vip'?`<span class="rank-pill rank-vip">⭐ VIP</span>`:`<span style="color:var(--text2)">None</span>`;
+}
+
+function renderPlayers(filter='') {
+  const tb=document.getElementById('playersTbody');
+  const list = filter ? players.filter(p=>p.name.toLowerCase().includes(filter.toLowerCase())) : players;
+  tb.innerHTML=list.map((p,i)=>`<tr>
+    <td><strong>${p.name}</strong></td>
+    <td>${rankBadgeHTML(p.rank)}</td>
+    <td><span style="color:var(--gold);font-family:var(--pixel-font)">${p.credits.toLocaleString()}</span></td>
+    <td style="color:var(--text2)">${p.joined}</td>
+    <td><span class="badge ${p.online?'badge-green':'badge-red'}">${p.online?'Online':'Offline'}</span></td>
+    <td style="display:flex;gap:6px">
+      <button class="admin-btn" onclick="openCreditsForPlayer(${players.indexOf(p)})">Credits</button>
+      <button class="admin-btn" onclick="openRankModal(${players.indexOf(p)})">Rank</button>
+      <button class="admin-btn-danger" onclick="openBanModalForPlayer('${p.name}')">Ban</button>
+    </td></tr>`).join('');
+}
+
+function filterPlayers(q) { renderPlayers(q); }
+
+// ── ADMIN: RANK MODAL ──────────────────────────────────────────────────────
+let editingRankPlayerIdx = -1;
+
+// inject rank modal dynamically if not in HTML
+(function() {
+  const d = document.createElement('div');
+  d.className = 'modal-bg'; d.id = 'rankModal';
+  d.innerHTML = `<div class="modal">
+    <button class="modal-close" onclick="closeModal('rankModal')">✕</button>
+    <h2>🏅 Change Player Rank</h2>
+    <div class="form-group"><label class="form-label">Player</label><div style="font-family:var(--pixel-font);color:var(--text);padding:6px 0;" id="rankModalPlayer">—</div></div>
+    <div class="form-group"><label class="form-label">New Rank</label>
+      <select class="form-input form-select" id="rankModalSelect">
+        <option value="none">None</option>
+        <option value="vip">⭐ VIP</option>
+        <option value="mvp">💜 MVP</option>
+        <option value="elite">🔴 Elite</option>
+        <option value="legend">👑 Legend</option>
+      </select>
+    </div>
+    <button class="btn-primary" style="width:100%" onclick="applyRankChange()">Apply Rank</button>
+  </div>`;
+  document.body.appendChild(d);
+  d.addEventListener('click', e=>{ if(e.target===d) d.classList.remove('open'); });
+})();
+
+function openRankModal(idx) {
+  editingRankPlayerIdx = idx;
+  document.getElementById('rankModalPlayer').textContent = players[idx].name;
+  document.getElementById('rankModalSelect').value = players[idx].rank;
+  showModal('rankModal');
+}
+
+function applyRankChange() {
+  if(editingRankPlayerIdx<0) return;
+  const newRank = document.getElementById('rankModalSelect').value;
+  const oldRank = players[editingRankPlayerIdx].rank;
+  players[editingRankPlayerIdx].rank = newRank;
+  closeModal('rankModal');
+  renderPlayers(); renderCreditsAdmin();
+  addActivity('Rank', players[editingRankPlayerIdx].name, `Rank changed: ${oldRank} → ${newRank}`);
+  showToast(`${players[editingRankPlayerIdx].name}'s rank changed from ${oldRank} to ${newRank}`);
+}
+
+// ── ADMIN: CREDITS ─────────────────────────────────────────────────────────
+function renderCreditsAdmin() {
+  const total = players.reduce((s,p)=>s+p.credits,0);
+  const avg = players.length ? Math.round(total/players.length) : 0;
+  const ce = document.getElementById('credCirculation'); if(ce) ce.textContent=total.toLocaleString();
+  const ae = document.getElementById('credAvg'); if(ae) ae.textContent=avg.toLocaleString();
+  const tb = document.getElementById('creditsAdminTbody'); if(!tb) return;
+  tb.innerHTML = players.map((p,i)=>`<tr>
+    <td><strong>${p.name}</strong></td>
+    <td><span style="color:var(--gold);font-family:var(--pixel-font)">${p.credits.toLocaleString()}</span></td>
+    <td><button class="admin-btn" onclick="openModifyCredits(${i})">Modify</button></td>
+  </tr>`).join('');
+}
+
+function openCreditsForPlayer(idx) {
+  // Populate the add credits modal with specific player pre-selected
+  const sel = document.getElementById('credPlayer');
+  populatePlayerSelect(sel);
+  sel.value = players[idx].name;
+  showModal('addCreditsModal');
+}
+
+function populatePlayerSelect(sel) {
+  sel.innerHTML = players.map(p=>`<option value="${p.name}">${p.name} (${p.credits.toLocaleString()} credits)</option>`).join('');
+}
+
+function openModifyCredits(idx) {
+  document.getElementById('modPlayerIndex').value = idx;
+  document.getElementById('modPlayerName').textContent = players[idx].name;
+  document.getElementById('modCurrentBalance').textContent = players[idx].credits.toLocaleString() + ' Credits';
+  document.getElementById('modAmount').value = '';
+  document.getElementById('modAction').value = 'add';
+  showModal('modifyCreditsModal');
+}
+
+function applyModifyCredits() {
+  const idx = parseInt(document.getElementById('modPlayerIndex').value);
+  const action = document.getElementById('modAction').value;
+  const amount = parseInt(document.getElementById('modAmount').value) || 0;
+  if(amount < 0) { showToast('Amount must be positive!'); return; }
+  const p = players[idx];
+  const old = p.credits;
+  if(action==='add') p.credits += amount;
+  else if(action==='remove') p.credits = Math.max(0, p.credits - amount);
+  else if(action==='set') p.credits = amount;
+  closeModal('modifyCreditsModal');
+  renderPlayers(); renderCreditsAdmin();
+  addActivity('Credits', p.name, `Credits: ${old.toLocaleString()} → ${p.credits.toLocaleString()} (${action})`);
+  showToast(`${p.name}: ${old.toLocaleString()} → ${p.credits.toLocaleString()} credits`);
+}
+
+function adminAddCredits() {
+  const sel = document.getElementById('credPlayer');
+  const name = sel.value;
+  const amount = parseInt(document.getElementById('credAmount').value) || 0;
+  if(!name) { showToast('Select a player!'); return; }
+  if(amount <= 0) { showToast('Enter a valid amount!'); return; }
+  const p = players.find(pl=>pl.name===name);
+  if(!p) { showToast('Player not found!'); return; }
+  p.credits += amount;
+  closeModal('addCreditsModal');
+  renderPlayers(); renderCreditsAdmin();
+  addActivity('Credits', name, `Admin added ${amount} credits. New balance: ${p.credits.toLocaleString()}`);
+  showToast(`Added ${amount} credits to ${name}. New balance: ${p.credits.toLocaleString()}`);
+}
+
+// ── ADMIN: PURCHASES ───────────────────────────────────────────────────────
+function renderPurchases(filter='') {
+  const tb = document.getElementById('purchasesTbody');
+  const typeFilter = (document.getElementById('purchaseTypeFilter')||{}).value || 'all';
+  let list = [...purchases];
+  if(filter) list = list.filter(p=>p.player.toLowerCase().includes(filter.toLowerCase())||p.item.toLowerCase().includes(filter.toLowerCase())||p.id.includes(filter));
+  if(typeFilter !== 'all') list = list.filter(p=>p.item.includes(typeFilter));
+  tb.innerHTML = list.map((p,i)=>`<tr>
+    <td style="font-family:var(--mono);color:var(--text2);font-size:0.8rem">${p.id}</td>
+    <td>${p.player}</td>
+    <td>${p.item}</td>
+    <td>${p.price}</td>
+    <td><span style="color:var(--gold);font-family:var(--pixel-font)">${p.credits.toLocaleString()}</span></td>
+    <td style="color:var(--text2)">${p.date}</td>
+    <td><span class="badge ${p.status==='completed'?'badge-green':'badge-red'}">${p.status}</span></td>
+    <td>${p.status==='completed'?`<button class="admin-btn-danger" onclick="refundPurchase('${p.id}')">Refund</button>`:`<button class="admin-btn" onclick="restorePurchase('${p.id}')">Restore</button>`}</td>
+  </tr>`).join('');
+}
+
+function filterPurchases(q) { renderPurchases(q); }
+
+function refundPurchase(id) {
+  const p = purchases.find(p=>p.id===id); if(!p) return;
+  p.status = 'refunded';
+  // deduct credits from player if they have them
+  const player = players.find(pl=>pl.name===p.player);
+  if(player) player.credits = Math.max(0, player.credits - p.credits);
+  renderPurchases(); renderPlayers(); renderCreditsAdmin();
+  showToast(`Order ${id} refunded. Credits deducted from ${p.player}.`);
+}
+
+function restorePurchase(id) {
+  const p = purchases.find(p=>p.id===id); if(!p) return;
+  p.status = 'completed';
+  const player = players.find(pl=>pl.name===p.player);
+  if(player) player.credits += p.credits;
+  renderPurchases(); renderPlayers(); renderCreditsAdmin();
+  showToast(`Order ${id} restored. Credits returned to ${p.player}.`);
+}
+
+// ── ADMIN: BANS ────────────────────────────────────────────────────────────
+function renderBans(filter='') {
+  const tb = document.getElementById('bansTbody'); if(!tb) return;
+  const list = filter ? bans.filter(b=>b.player.toLowerCase().includes(filter.toLowerCase())||b.reason.toLowerCase().includes(filter.toLowerCase())) : bans;
+  if(list.length === 0) {
+    tb.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text2);padding:2rem">No bans found</td></tr>`;
+    return;
+  }
+  tb.innerHTML = list.map((b,i)=>`<tr>
+    <td><strong>${b.player}</strong></td>
+    <td>${b.reason}</td>
+    <td style="color:var(--text2)">${b.bannedBy}</td>
+    <td>${b.expires==='Permanent'?`<span class="badge badge-red">Permanent</span>`:b.expires}</td>
+    <td><button class="admin-btn" onclick="unbanPlayer('${b.player}')">Unban</button></td>
+  </tr>`).join('');
+}
+
+function filterBans(q) { renderBans(q); }
+
+function unbanPlayer(name) {
+  bans = bans.filter(b=>b.player!==name);
+  renderBans();
+  addActivity('Unban', name, 'Ban removed by admin');
+  showToast(`${name} has been unbanned.`);
+}
+
+function openBanModal() {
+  document.getElementById('banUsername').value = '';
+  document.getElementById('banReason').value = '';
+  document.getElementById('banDuration').value = '1 Day';
+  showModal('banModal');
+}
+
+function openBanModalForPlayer(name) {
+  document.getElementById('banUsername').value = name;
+  document.getElementById('banReason').value = '';
+  document.getElementById('banDuration').value = '1 Week';
+  showModal('banModal');
+}
+
+function issueBan() {
+  const name = document.getElementById('banUsername').value.trim();
+  const reason = document.getElementById('banReason').value.trim();
+  const duration = document.getElementById('banDuration').value;
+  if(!name) { showToast('Enter a player username!'); return; }
+  if(!reason) { showToast('Enter a ban reason!'); return; }
+  if(bans.find(b=>b.player.toLowerCase()===name.toLowerCase())) {
+    showToast(`${name} is already banned!`); return;
+  }
+  bans.unshift({player:name, reason, bannedBy:'DuckyzAdmin', expires:duration==='Permanent'?'Permanent':duration});
+  closeModal('banModal');
+  renderBans();
+  addActivity('Ban', name, `Banned: ${reason} (${duration})`);
+  showToast(`${name} has been banned (${duration}).`);
+}
+
+// ── ADMIN: BLOG ────────────────────────────────────────────────────────────
+function renderAdminBlog() {
+  document.getElementById('blogCount').textContent=blogPosts.length+' posts';
+  document.getElementById('adminBlogList').innerHTML=blogPosts.map(p=>`
+    <div class="blog-admin-card">
+      <div style="font-size:2rem">${p.emoji}</div>
+      <div class="blog-admin-info" style="flex:1">
+        <h3>${p.title}</h3>
+        <p>${p.date} · By ${p.author} · <span class="badge badge-gold">${p.tag}</span></p>
+      </div>
+      <div class="blog-admin-actions">
+        <button class="admin-btn" onclick="editBlog(${p.id})">Edit</button>
+        <button class="admin-btn-danger" onclick="deleteBlog(${p.id})">Delete</button>
+      </div>
+    </div>`).join('');
+}
+
+let editingBlogId = null;
+
+function publishBlogPost() {
+  const title=document.getElementById('newBlogTitle').value.trim();
+  const category=document.getElementById('newBlogCategory').value;
+  const excerpt=document.getElementById('newBlogExcerpt').value.trim();
+  const content=document.getElementById('newBlogContent').value.trim();
+  const author=document.getElementById('newBlogAuthor').value.trim()||'DuckyzDev';
+  if(!title||!excerpt||!content){showToast('Fill in all fields!');return;}
+  const emojis={'Update':'🔄','Patch Notes':'🔧','Event':'🎉','Announcement':'📢'};
+  const post = {
+    id: editingBlogId || Date.now(), title, tag:category, excerpt,
+    content:'<p>'+content.split('\n').filter(l=>l.trim()).join('</p><p>')+'</p>',
+    author, date:'May 18, 2025', emoji:emojis[category]||'📝',
+    authorInitials:author.substring(0,2).toUpperCase()
+  };
+  const wasEditing = !!editingBlogId;
+  if(editingBlogId) {
+    const idx = blogPosts.findIndex(b=>b.id===editingBlogId);
+    if(idx>=0) blogPosts[idx] = post;
+  } else {
+    blogPosts.unshift(post);
+  }
+  editingBlogId = null;
+  document.getElementById('newBlogModalTitle').textContent = '📝 New Blog Post';
+  closeModal('newBlogModal');
+  renderAdminBlog();
+  showToast(wasEditing ? 'Blog post updated!' : 'Blog post published!');
+  ['newBlogTitle','newBlogExcerpt','newBlogContent'].forEach(id=>document.getElementById(id).value='');
+}
+
+function deleteBlog(id) {
+  if(!confirm('Delete this post?')) return;
+  blogPosts=blogPosts.filter(p=>p.id!==id);
+  renderAdminBlog();
+  showToast('Post deleted.');
+}
+
+function editBlog(id) {
+  const p=blogPosts.find(b=>b.id===id); if(!p) return;
+  editingBlogId = id;
+  document.getElementById('newBlogModalTitle').textContent = '✏️ Edit Blog Post';
+  document.getElementById('newBlogTitle').value = p.title;
+  document.getElementById('newBlogExcerpt').value = p.excerpt;
+  document.getElementById('newBlogAuthor').value = p.author;
+  document.getElementById('newBlogCategory').value = p.tag;
+  // strip html tags for content
+  document.getElementById('newBlogContent').value = p.content.replace(/<\/p><p>/g,'\n').replace(/<[^>]*>/g,'');
+  showModal('newBlogModal');
+}
+
+// ── ADMIN: STORE ITEMS ─────────────────────────────────────────────────────
+function catBadge(cat) {
+  if(cat==='Rank') return `<span class="badge badge-gold">Rank</span>`;
+  if(cat==='Cosmetic') return `<span class="badge badge-purple">Cosmetic</span>`;
+  return `<span class="badge badge-blue">Crate Key</span>`;
+}
+
+function renderStoreAdmin() {
+  const filter = (document.getElementById('storeCatFilter')||{}).value || 'all';
+  const tb = document.getElementById('storeAdminTbody'); if(!tb) return;
+  let list = filter==='all' ? storeItems : storeItems.filter(i=>i.category===filter);
+  tb.innerHTML = list.map(item=>`<tr>
+    <td>${item.emoji} ${item.name}</td>
+    <td>${catBadge(item.category)}</td>
+    <td>${item.price.toLocaleString()}</td>
+    <td>${item.sold}</td>
+    <td><span class="badge ${item.active?'badge-green':'badge-red'}">${item.active?'Active':'Hidden'}</span></td>
+    <td style="display:flex;gap:6px;flex-wrap:wrap">
+      <button class="admin-btn" onclick="editStoreItem(${item.id})">Edit</button>
+      <button class="admin-btn" onclick="toggleItemActive(${item.id})">${item.active?'Hide':'Show'}</button>
+      <button class="admin-btn-danger" onclick="removeStoreItem(${item.id})">Remove</button>
+    </td>
+  </tr>`).join('');
+}
+
+function openNewItemModal() {
+  document.getElementById('editingItemId').value = '';
+  document.getElementById('newItemModalTitle').textContent = '➕ Add Store Item';
+  document.getElementById('newItemName').value = '';
+  document.getElementById('newItemPrice').value = '';
+  document.getElementById('newItemDesc').value = '';
+  document.getElementById('newItemEmoji').value = '';
+  document.getElementById('newItemCategory').value = 'Rank';
+  showModal('newItemModal');
+}
+
+function editStoreItem(id) {
+  const item = storeItems.find(i=>i.id===id); if(!item) return;
+  document.getElementById('editingItemId').value = id;
+  document.getElementById('newItemModalTitle').textContent = '✏️ Edit Store Item';
+  document.getElementById('newItemName').value = item.name;
+  document.getElementById('newItemPrice').value = item.price;
+  document.getElementById('newItemDesc').value = item.desc || '';
+  document.getElementById('newItemEmoji').value = item.emoji;
+  document.getElementById('newItemCategory').value = item.category;
+  showModal('newItemModal');
+}
+
+function saveStoreItem() {
+  const name = document.getElementById('newItemName').value.trim();
+  const price = parseInt(document.getElementById('newItemPrice').value) || 0;
+  const desc = document.getElementById('newItemDesc').value.trim();
+  const emoji = document.getElementById('newItemEmoji').value.trim() || '🎁';
+  const category = document.getElementById('newItemCategory').value;
+  const editId = document.getElementById('editingItemId').value;
+  if(!name) { showToast('Enter an item name!'); return; }
+  if(price <= 0) { showToast('Enter a valid price!'); return; }
+  if(editId) {
+    const item = storeItems.find(i=>i.id==editId);
+    if(item) { item.name=name; item.price=price; item.desc=desc; item.emoji=emoji; item.category=category; }
+    showToast(`"${name}" updated!`);
+  } else {
+    storeItems.push({id:Date.now(),name,category,price,desc,emoji,sold:0,active:true});
+    showToast(`"${name}" added to store!`);
+  }
+  closeModal('newItemModal');
+  renderStoreAdmin();
+}
+
+function toggleItemActive(id) {
+  const item = storeItems.find(i=>i.id===id); if(!item) return;
+  item.active = !item.active;
+  renderStoreAdmin();
+  showToast(`"${item.name}" is now ${item.active?'visible':'hidden'} in the store.`);
+}
+
+function removeStoreItem(id) {
+  const item = storeItems.find(i=>i.id===id); if(!item) return;
+  if(!confirm(`Remove "${item.name}" from the store?`)) return;
+  storeItems = storeItems.filter(i=>i.id!==id);
+  renderStoreAdmin();
+  showToast(`"${item.name}" removed from store.`);
+}
+
+// ── MODALS ─────────────────────────────────────────────────────────────────
+function showModal(id) {
+  const m = document.getElementById(id); if(!m) return;
+  // populate player selects when opening
+  if(id==='addCreditsModal') {
+    const sel = document.getElementById('credPlayer');
+    if(sel) populatePlayerSelect(sel);
+  }
+  m.classList.add('open');
+}
+function closeModal(id) { const m=document.getElementById(id); if(m) m.classList.remove('open'); }
+document.querySelectorAll('.modal-bg').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
+
+// ── TOAST ──────────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  document.getElementById('toastMsg').textContent=msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+// ── ADMIN: ADD PLAYER ──────────────────────────────────────────────────────
+function openAddPlayerModal() {
+  document.getElementById('newPlayerName').value = '';
+  document.getElementById('newPlayerRank').value = 'none';
+  document.getElementById('newPlayerCredits').value = '0';
+  showModal('addPlayerModal');
+}
+
+function addPlayer() {
+  const name = document.getElementById('newPlayerName').value.trim();
+  const rank = document.getElementById('newPlayerRank').value;
+  const credits = parseInt(document.getElementById('newPlayerCredits').value) || 0;
+  if(!name) { showToast('Enter a username!'); return; }
+  if(players.find(p=>p.name.toLowerCase()===name.toLowerCase())) { showToast('Player already exists!'); return; }
+  const now = new Date();
+  players.unshift({name, rank, credits, joined: now.toLocaleString('en',{month:'short',year:'numeric'}), online:false});
+  addActivity('Login', name, 'Player added manually by admin');
+  closeModal('addPlayerModal');
+  renderPlayers(); renderCreditsAdmin();
+  showToast(`${name} added to player list!`);
+}
+
+// ── ACTIVITY LOG ───────────────────────────────────────────────────────────
+let activityLog = [
+  {time:'2 min ago',player:'CreeperKing',type:'Purchase',typeCls:'badge-green',detail:'Bought MVP Rank — 1,200 credits'},
+  {time:'15 min ago',player:'SteveXPro',type:'Credits',typeCls:'badge-gold',detail:'Purchased 500 credits package'},
+  {time:'1 hr ago',player:'DiamondQueen',type:'Login',typeCls:'badge-blue',detail:'Player joined the server'},
+  {time:'2 hr ago',player:'NoobSlayer99',type:'Report',typeCls:'badge-red',detail:'Reported for suspected hacking'},
+  {time:'3 hr ago',player:'LegendDuck',type:'Crate',typeCls:'badge-purple',detail:'Opened Legendary Key — Won Moon Wings'},
+];
+
+function addActivity(type, player, detail) {
+  const typeMap = {Purchase:'badge-green',Credits:'badge-gold',Login:'badge-blue',Report:'badge-red',Crate:'badge-purple',Ban:'badge-red',Unban:'badge-gold',Rank:'badge-purple'};
+  activityLog.unshift({time:'Just now',player,type,typeCls:typeMap[type]||'badge-blue',detail});
+  renderActivityLog();
+}
+
+function renderActivityLog() {
+  const tb = document.querySelector('#admin-dashboard .table-wrap tbody');
+  if(!tb) return;
+  tb.innerHTML = activityLog.slice(0,10).map(a=>`
+    <tr><td style="color:var(--text2)">${a.time}</td><td>${a.player}</td>
+    <td><span class="badge ${a.typeCls}">${a.type}</span></td>
+    <td>${a.detail}</td></tr>`).join('');
+}
+// ── INIT ───────────────────────────────────────────────────────────────────
+renderBlog();
+renderActivityLog();
+</script>
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+<script>
+
+const socket = io("https://ducksystem-api.onrender.com");
+
+socket.on("playerCount", (count) => {
+
+    document.getElementById("onlinePlayers").innerText = count;
+
+    console.log("Live player count updated:", count);
+
+});
+
+</script>
+</body>
+</html>

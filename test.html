@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>DuckSystem Test</title>
+</head>
+
+<body style="background:black;color:white;font-family:Arial;padding:40px;">
+
+<h1>Send Test Player Count</h1>
+
+<button onclick="sendData()" style="padding:10px 20px;font-size:18px;">
+    Send Test Data
+</button>
+
+<script>
+
+async function sendData() {
+
+    await fetch("https://ducksystem-api.onrender.com/updatePlayers", {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+            online: 777
+        })
+
+    });
+
+    console.log("Test data sent!");
+
+    alert("Sent player count: 777");
+
+}
+
+</script>
+
+</body>
+</html>
